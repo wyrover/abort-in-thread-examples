@@ -41,7 +41,7 @@ workspace(path.getname(os.realpath(".")))
     end    
     
 
-    group "sdl-examples"    
+    group "examples"    
 
         matches = os.matchdirs("src/example*")
         for i = #matches, 1, -1 do           
