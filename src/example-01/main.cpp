@@ -31,7 +31,7 @@ void SignalHandler(int signal)
     longjmp(env, 1);
 }
 
-extern "C" UINT __stdcall run_lua_in_thread(LPVOID lParam)
+extern "C" UINT __stdcall run_in_thread2(LPVOID lParam)
 {
     if (setjmp(env) == 0) {
         signal(SIGABRT, &SignalHandler);
@@ -42,6 +42,29 @@ extern "C" UINT __stdcall run_lua_in_thread(LPVOID lParam)
 
     return 0;
 }
+
+extern "C" UINT __stdcall run_lua_in_thread(LPVOID lParam)
+{
+    if (setjmp(env) == 0) {
+        signal(SIGABRT, &SignalHandler);
+        std::cout << "step 1\n";
+        //abort();
+        std::cout << "step 2\n";
+
+        HANDLE hThread;
+        hThread = (HANDLE)_beginthreadex(NULL, 1024 * 1024 * 2, run_in_thread2, NULL, 0, NULL);
+
+        if (hThread) {
+            SetThreadPriority(hThread, THREAD_PRIORITY_NORMAL);
+            CloseHandle(hThread);
+            hThread = NULL;
+        }
+    }
+
+    return 0;
+}
+
+
 
 
 
